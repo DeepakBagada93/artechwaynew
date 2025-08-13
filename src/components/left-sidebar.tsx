@@ -53,17 +53,6 @@ export function LeftSidebar() {
         </nav>
 
       </div>
-      <div className="p-4">
-        <Button variant="ghost" className="flex w-full items-center justify-start gap-3">
-          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-            <User className="h-6 w-6 text-muted-foreground"/>
-          </div>
-          <div className="text-left">
-            <p className="font-bold">Your Name</p>
-            <p className="text-sm text-muted-foreground">@yourhandle</p>
-          </div>
-        </Button>
-      </div>
     </aside>
   );
 }
