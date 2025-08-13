@@ -1,17 +1,14 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search } from "lucide-react";
+import { Search, Tag } from "lucide-react";
+import { Badge } from "./ui/badge";
 
 export function RightSidebar() {
+  const tags = ["AI Writing", "SaaS", "Automation", "Graphic Design", "Productivity", "Marketing", "Web Dev"]
   return (
-    <aside className="sticky top-0 h-screen w-80 flex-col gap-8 p-4 hidden xl:flex">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-        <Input placeholder="Search" className="pl-10 h-12 rounded-full" />
-      </div>
-
-      <Card className="bg-card/30">
+    <aside className="sticky top-24 flex w-full flex-col gap-8">
+      <Card>
         <CardHeader>
           <CardTitle className="font-headline text-xl">
             Subscribe to Artechway
@@ -26,12 +23,29 @@ export function RightSidebar() {
               type="email"
               placeholder="Enter your email"
               aria-label="Email for newsletter"
+              className="h-10"
             />
             <Button type="submit">Subscribe</Button>
           </form>
         </CardContent>
       </Card>
       
+      <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 font-headline text-xl">
+                <Tag className="h-5 w-5" />
+                Popular Tags
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+                {tags.map(tag => (
+                    <Badge key={tag} variant="secondary" className="px-3 py-1 text-sm">{tag}</Badge>
+                ))}
+            </div>
+          </CardContent>
+      </Card>
+
       <Footer />
     </aside>
   );

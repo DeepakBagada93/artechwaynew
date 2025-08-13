@@ -6,22 +6,23 @@ import { AppHeader } from "@/components/header";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen justify-center">
-      <AppHeader />
+    <div className="flex min-h-screen bg-background">
       <LeftSidebar />
-      <main className="w-full max-w-2xl border-x border-border/40">
-        <div className="sticky top-0 z-10 border-b border-border/40 bg-background/60 p-4 backdrop-blur-md hidden md:block">
-          <h1 className="font-headline text-xl font-bold">Home</h1>
-        </div>
-        <div className="flex flex-col pt-16 md:pt-0">
-          {mockArticles.map((article) => (
-            <div key={article.id} className="border-b border-border/40">
-              <ArticleCard article={article} />
+      <div className="flex-1">
+        <AppHeader />
+        <main className="container mx-auto max-w-5xl px-4 py-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div className="space-y-8 lg:col-span-2">
+              {mockArticles.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
             </div>
-          ))}
-        </div>
-      </main>
-      <RightSidebar />
+            <div className="lg:col-span-1">
+              <RightSidebar />
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
