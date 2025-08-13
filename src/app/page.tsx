@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArticleCard } from "@/components/article-card";
 import { mockArticles } from "@/lib/data";
-import { RecommendationsSection } from "@/components/recommendations-section";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ArrowRight } from "lucide-react";
@@ -38,8 +37,6 @@ export default function Home() {
             ))}
           </div>
         </section>
-
-        <RecommendationsSection />
 
         <section id="newsletter" className="py-16 md:py-24 bg-card/50">
           <div className="container mx-auto px-4 text-center">
