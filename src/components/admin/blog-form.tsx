@@ -189,6 +189,9 @@ export function BlogForm() {
                       {...field}
                     />
                   </FormControl>
+                   <FormDescription>
+                    Example: `# Headline`, `**bold**`, `*italic*`, `[Link](https://...)`
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
