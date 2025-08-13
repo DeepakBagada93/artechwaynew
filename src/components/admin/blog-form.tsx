@@ -30,7 +30,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { generateImage } from "@/ai/flows/image-generation-flow";
 import { Loader2, Wand2 } from "lucide-react";
 import { generateBlogPost } from "@/ai/flows/blog-generation-flow";
-import { supabase } from "@/lib/supabase";
+import { createBrowserClient } from "@supabase/ssr";
 
 const formSchema = z.object({
   topic: z.string().optional(),
@@ -63,6 +63,11 @@ export function BlogForm() {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isGeneratingBlog, setIsGeneratingBlog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

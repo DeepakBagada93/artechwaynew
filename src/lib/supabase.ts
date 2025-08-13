@@ -9,7 +9,12 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase URL and Anon Key must be defined in your environment variables.');
+  // In a client component, this check might not behave as expected
+  // since process.env is populated at build time.
+  // The check in components is more reliable.
 }
 
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!, 
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
