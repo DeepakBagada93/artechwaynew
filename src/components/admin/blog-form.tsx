@@ -28,9 +28,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { generateImage } from "@/ai/flows/image-generation-flow";
-import { Loader2 } from "lucide-react";
+import { Loader2, Wand2 } from "lucide-react";
+import { generateBlogPost } from "@/ai/flows/blog-generation-flow";
 
 const formSchema = z.object({
+  topic: z.string().optional(),
   title: z.string().min(2, {
     message: "Title must be at least 2 characters.",
   }),
@@ -57,11 +59,13 @@ export function BlogForm() {
   const { toast } = useToast();
   const [sourceImage, setSourceImage] = useState<string | null>(null);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [isGeneratingBlog, setIsGeneratingBlog] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      topic: "",
       title: "",
       description: "",
       imagePrompt: "a web development company logo on the image",
@@ -84,6 +88,42 @@ export function BlogForm() {
       reader.readAsDataURL(file);
     }
   };
+  
+  const handleBlogGeneration = async () => {
+    const topic = form.getValues("topic");
+    if (!topic) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please enter a topic to generate the blog post.",
+      });
+      return;
+    }
+
+    setIsGeneratingBlog(true);
+    try {
+      const result = await generateBlogPost({ topic });
+      form.setValue("title", result.title);
+      form.setValue("description", result.description);
+      form.setValue("content", result.content);
+      form.setValue("seoTitle", result.seoTitle);
+      form.setValue("seoDescription", result.seoDescription);
+      form.setValue("seoKeywords", result.seoKeywords);
+      toast({
+        title: "Blog Post Generated!",
+        description: "The AI has successfully generated the blog post content.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to generate blog post. Please try again.",
+      });
+    } finally {
+      setIsGeneratingBlog(false);
+    }
+  };
 
   const handleImageGeneration = async () => {
     if (!sourceImage) {
@@ -104,7 +144,7 @@ export function BlogForm() {
         return;
     }
 
-    setIsGenerating(true);
+    setIsGeneratingImage(true);
     try {
         const result = await generateImage({ sourceImage, prompt: imagePrompt });
         if (result.imageUrl) {
@@ -122,7 +162,7 @@ export function BlogForm() {
             description: "Failed to generate image. Please try again.",
         });
     } finally {
-        setIsGenerating(false);
+        setIsGeneratingImage(false);
     }
   };
 
@@ -147,6 +187,34 @@ export function BlogForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="space-y-8 lg:col-span-2">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Generate with AI</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     <FormField
+                        control={form.control}
+                        name="topic"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Blog Post Topic</FormLabel>
+                            <FormControl>
+                                <Input placeholder="e.g., 'How AI is changing graphic design'" {...field} />
+                            </FormControl>
+                             <FormDescription>
+                                Enter a topic and let AI write the post for you.
+                            </FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    <Button type="button" onClick={handleBlogGeneration} disabled={isGeneratingBlog} className="w-full">
+                         {isGeneratingBlog && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                         <Wand2 className="mr-2 h-4 w-4" />
+                        Generate Blog Post
+                    </Button>
+                </CardContent>
+            </Card>
             <FormField
               control={form.control}
               name="title"
@@ -245,8 +313,8 @@ export function BlogForm() {
                             </FormItem>
                         )}
                         />
-                    <Button type="button" onClick={handleImageGeneration} disabled={isGenerating || !sourceImage} className="w-full">
-                        {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    <Button type="button" onClick={handleImageGeneration} disabled={isGeneratingImage || !sourceImage} className="w-full">
+                        {isGeneratingImage && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Generate Image
                     </Button>
 
