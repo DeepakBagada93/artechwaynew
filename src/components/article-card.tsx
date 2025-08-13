@@ -30,7 +30,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
         </div>
       </CardHeader>
       <CardContent className="flex-1 p-6">
-        <Badge variant="secondary" className="mb-2">{article.category}</Badge>
+        <Badge variant={article.category === 'Creatives' ? 'default' : 'secondary'} className="mb-2">{article.category}</Badge>
         <CardTitle className="font-headline text-xl">{article.title}</CardTitle>
         <CardDescription className="mt-2">{article.description}</CardDescription>
       </CardContent>

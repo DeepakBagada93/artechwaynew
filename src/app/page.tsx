@@ -14,10 +14,10 @@ export default function Home() {
       <main className="flex-1">
         <section className="container mx-auto px-4 py-20 text-center md:py-32">
           <h1 className="font-headline text-5xl font-bold tracking-tighter md:text-7xl">
-            Where AI Meets Human Creativity
+            Unlock Your Potential with AI
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-            Niche AI is your guide to the evolving landscape of artificial intelligence and its impact on the creative world. Discover articles, insights, and the tools shaping our future.
+            Artechway provides insights and tools for creative professionals and small businesses to thrive through AI-powered automation and innovation.
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button size="lg">

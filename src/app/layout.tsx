@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Niche AI',
-  description: 'Exploring the intersection of technology and art.',
+  title: 'Artechway',
+  description: 'AI for Creative Professionals and Small Business Automation.',
 };
 
 export default function RootLayout({
