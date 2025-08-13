@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Artechway',
+  title: 'Niche AI',
   description: 'Exploring the intersection of technology and art.',
 };
 

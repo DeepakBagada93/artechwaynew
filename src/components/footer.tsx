@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="border-t border-border/40">
       <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row">
         <p className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Artechway. All rights reserved.
+          © {new Date().getFullYear()} Niche AI. All rights reserved.
         </p>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" aria-label="Twitter">

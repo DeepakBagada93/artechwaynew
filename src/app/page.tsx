@@ -17,7 +17,7 @@ export default function Home() {
             Where AI Meets Human Creativity
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-            Artechway is your guide to the evolving landscape of artificial intelligence and its impact on the creative world. Discover articles, insights, and the tools shaping our future.
+            Niche AI is your guide to the evolving landscape of artificial intelligence and its impact on the creative world. Discover articles, insights, and the tools shaping our future.
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button size="lg">
