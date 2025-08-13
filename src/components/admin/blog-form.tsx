@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useState } from "react";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +27,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { generateImage } from "@/ai/flows/image-generation-flow";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -33,8 +37,7 @@ const formSchema = z.object({
   description: z.string().min(10, {
     message: "Description must be at least 10 characters.",
   }),
-  imageUrl: z.string().url({ message: "Please enter a valid URL." }),
-  aiHint: z.string().min(2, { message: "AI hint must be at least 2 characters." }),
+  imagePrompt: z.string().min(2, { message: "Image prompt must be at least 2 characters."}),
   category: z.enum(["Creatives", "Business"]),
   content: z.string().min(50, {
     message: "Content must be at least 50 characters.",
@@ -52,13 +55,16 @@ const formSchema = z.object({
 
 export function BlogForm() {
   const { toast } = useToast();
+  const [sourceImage, setSourceImage] = useState<string | null>(null);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       description: "",
-      imageUrl: "",
-      aiHint: "",
+      imagePrompt: "a web development company logo on the image",
       category: "Creatives",
       content: "",
       seoTitle: "",
@@ -67,13 +73,73 @@ export function BlogForm() {
     },
   });
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSourceImage(reader.result as string);
+        setGeneratedImageUrl(null);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageGeneration = async () => {
+    if (!sourceImage) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Please upload a source image first.",
+        });
+        return;
+    }
+    const imagePrompt = form.getValues("imagePrompt");
+    if (!imagePrompt) {
+         toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Please provide a prompt for image generation.",
+        });
+        return;
+    }
+
+    setIsGenerating(true);
+    try {
+        const result = await generateImage({ sourceImage, prompt: imagePrompt });
+        if (result.imageUrl) {
+            setGeneratedImageUrl(result.imageUrl);
+            toast({
+                title: "Image Generated",
+                description: "The new image has been successfully generated.",
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to generate image. Please try again.",
+        });
+    } finally {
+        setIsGenerating(false);
+    }
+  };
+
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    const finalValues = {
+        ...values,
+        imageUrl: generatedImageUrl,
+    }
+    console.log(finalValues);
     toast({
       title: "Blog Post Submitted!",
       description: "Your new blog post has been created successfully.",
     });
     form.reset();
+    setSourceImage(null);
+    setGeneratedImageUrl(null);
   }
 
   return (
@@ -155,33 +221,50 @@ export function BlogForm() {
                         </FormItem>
                     )}
                     />
-                    <FormField
-                    control={form.control}
-                    name="imageUrl"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Image URL</FormLabel>
+                    <FormItem>
+                        <FormLabel>Source Image</FormLabel>
                         <FormControl>
-                            <Input placeholder="https://placehold.co/600x400.png" {...field} />
+                            <Input type="file" accept="image/*" onChange={handleImageChange} />
                         </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="aiHint"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Image AI Hint</FormLabel>
-                        <FormControl>
-                            <Input placeholder="e.g. camera lens" {...field} />
-                        </FormControl>
-                        <FormDescription>Two keywords for image search.</FormDescription>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
+                    </FormItem>
+                    
+                     <FormField
+                        control={form.control}
+                        name="imagePrompt"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Image Generation Prompt</FormLabel>
+                            <FormControl>
+                                <Textarea placeholder="e.g. 'saasnext- web development company'" {...field} />
+                            </FormControl>
+                            <FormDescription>Describe how to modify the image.</FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    <Button type="button" onClick={handleImageGeneration} disabled={isGenerating || !sourceImage} className="w-full">
+                        {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Generate Image
+                    </Button>
+
+                    <div className="space-y-2">
+                        <h4 className="text-sm font-medium">Image Preview</h4>
+                        <div className="grid grid-cols-2 gap-2">
+                            {sourceImage && (
+                                <div>
+                                    <p className="text-xs text-muted-foreground mb-1">Source</p>
+                                    <Image src={sourceImage} alt="Source Preview" width={200} height={150} className="rounded-md object-cover aspect-[4/3]" />
+                                </div>
+                            )}
+                            {generatedImageUrl && (
+                                <div>
+                                    <p className="text-xs text-muted-foreground mb-1">Generated</p>
+                                    <Image src={generatedImageUrl} alt="Generated Preview" width={200} height={150} className="rounded-md object-cover aspect-[4/3]" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                 </CardContent>
              </Card>
              <Card>
@@ -235,7 +318,7 @@ export function BlogForm() {
              </Card>
           </div>
         </div>
-        <Button type="submit">Create Post</Button>
+        <Button type="submit" disabled={!generatedImageUrl}>Create Post</Button>
       </form>
     </Form>
   );
