@@ -30,6 +30,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { generateImage } from "@/ai/flows/image-generation-flow";
 import { Loader2, Wand2 } from "lucide-react";
 import { generateBlogPost } from "@/ai/flows/blog-generation-flow";
+import { supabase } from "@/lib/supabase";
 
 const formSchema = z.object({
   topic: z.string().optional(),
@@ -61,6 +62,7 @@ export function BlogForm() {
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isGeneratingBlog, setIsGeneratingBlog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -167,19 +169,43 @@ export function BlogForm() {
   };
 
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
     const finalValues = {
         ...values,
         imageUrl: generatedImageUrl,
+    };
+
+    const { error } = await supabase.from('posts').insert([
+        { 
+            title: finalValues.title,
+            description: finalValues.description,
+            content: finalValues.content,
+            imageUrl: finalValues.imageUrl,
+            category: finalValues.category,
+            seoTitle: finalValues.seoTitle,
+            seoDescription: finalValues.seoDescription,
+            seoKeywords: finalValues.seoKeywords,
+         }
+    ]);
+
+    if (error) {
+        console.error('Error inserting post:', error);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to create blog post. Please try again.",
+        });
+    } else {
+        toast({
+          title: "Blog Post Submitted!",
+          description: "Your new blog post has been created successfully.",
+        });
+        form.reset();
+        setSourceImage(null);
+        setGeneratedImageUrl(null);
     }
-    console.log(finalValues);
-    toast({
-      title: "Blog Post Submitted!",
-      description: "Your new blog post has been created successfully.",
-    });
-    form.reset();
-    setSourceImage(null);
-    setGeneratedImageUrl(null);
+    setIsSubmitting(false);
   }
 
   return (
@@ -389,7 +415,10 @@ export function BlogForm() {
              </Card>
           </div>
         </div>
-        <Button type="submit" disabled={!generatedImageUrl}>Create Post</Button>
+        <Button type="submit" disabled={!generatedImageUrl || isSubmitting}>
+             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Create Post
+        </Button>
       </form>
     </Form>
   );

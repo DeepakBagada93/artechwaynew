@@ -1,10 +1,31 @@
 import { ArticleCard } from "@/components/article-card";
-import { mockArticles } from "@/lib/data";
 import { LeftSidebar } from "@/components/left-sidebar";
 import { RightSidebar } from "@/components/right-sidebar";
 import { AppHeader } from "@/components/header";
+import { supabase } from "@/lib/supabase";
+import type { Article } from "@/lib/data";
 
-export default function Home() {
+export default async function Home() {
+  const { data: articles, error } = await supabase
+    .from('posts')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching posts:', error);
+    // Handle error appropriately
+  }
+  
+  const formattedArticles: Article[] = articles?.map(post => ({
+    id: post.id,
+    title: post.title,
+    description: post.description,
+    category: post.category,
+    imageUrl: post.imageUrl,
+    aiHint: 'user generated content', // Or generate a hint from keywords
+  })) || [];
+
+
   return (
     <div className="flex min-h-screen bg-background">
       <LeftSidebar />
@@ -13,9 +34,15 @@ export default function Home() {
         <main className="container mx-auto max-w-5xl px-4 py-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="space-y-8 lg:col-span-2">
-              {mockArticles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-              ))}
+               {formattedArticles.length > 0 ? (
+                formattedArticles.map((article) => (
+                  <ArticleCard key={article.id} article={article} />
+                ))
+              ) : (
+                <div className="text-center text-muted-foreground">
+                  <p>No articles found. Check back later!</p>
+                </div>
+              )}
             </div>
             <div className="lg:col-span-1">
               <RightSidebar />
