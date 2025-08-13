@@ -14,8 +14,8 @@ export function Header() {
             <span className="font-bold font-headline text-lg">Artechway</span>
           </Link>
           <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-            <Link href="#articles">Creatives</Link>
-            <Link href="#articles">Business</Link>
+            <Link href="#articles">AI Creatives</Link>
+            <Link href="#articles">AI Business</Link>
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
