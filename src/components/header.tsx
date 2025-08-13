@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu, Bot, Home, Hash, Bell, Mail, Bookmark, User } from "lucide-react";
 
@@ -30,12 +30,16 @@ export function AppHeader() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left">
-          <div className="flex flex-col p-6">
-            <Link href="/" className="mb-8 flex items-center gap-2 font-bold font-headline text-lg">
-              <Bot className="h-6 w-6" />
-              Artechway
-            </Link>
-            <nav className="flex flex-col gap-4 text-lg font-medium">
+          <SheetHeader className="p-6 text-left">
+            <SheetTitle>
+              <Link href="/" className="flex items-center gap-2 font-bold font-headline text-lg">
+                <Bot className="h-6 w-6" />
+                Artechway
+              </Link>
+            </SheetTitle>
+          </SheetHeader>
+          <div className="flex flex-col p-6 pt-0">
+            <nav className="flex flex-col gap-4 text-lg font-medium mt-8">
               {navItems.map((item) => (
                 <Link key={item.text} href={item.href} className="flex items-center gap-4">
                   <item.icon className="h-7 w-7" />
