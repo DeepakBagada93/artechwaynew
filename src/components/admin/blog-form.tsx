@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
 import Image from "next/image";
+import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -176,9 +178,45 @@ export function BlogForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
+    let publicUrl = 'https://placehold.co/600x400.png';
+
+    if (generatedImageUrl) {
+      try {
+        const response = await fetch(generatedImageUrl);
+        const blob = await response.blob();
+        const fileName = `${uuidv4()}.${blob.type.split('/')[1]}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('blog_images')
+          .upload(fileName, blob, {
+            cacheControl: '3600',
+            upsert: false,
+          });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const { data: urlData } = supabase.storage
+          .from('blog_images')
+          .getPublicUrl(uploadData.path);
+        
+        publicUrl = urlData.publicUrl;
+
+      } catch (error: any) {
+        console.error('Error uploading image:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error uploading image',
+          description: error.message || 'Please check the console for more details.',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+    }
+    
     const finalValues = {
-        ...values,
-        imageUrl: generatedImageUrl || 'https://placehold.co/600x400.png',
+      ...values,
+      imageUrl: publicUrl,
     };
 
     const { error } = await supabase.from('posts').insert([
@@ -428,3 +466,5 @@ export function BlogForm() {
     </Form>
   );
 }
+
+    
