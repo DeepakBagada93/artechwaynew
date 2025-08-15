@@ -1,109 +1,57 @@
--- =================================================================
---  CLEANUP: Drop existing objects to start with a clean slate
--- =================================================================
+-- Drop existing table and storage bucket to start fresh
+DROP TABLE IF EXISTS public.posts CASCADE;
+SELECT extensions.storage_try_delete_bucket('blog_images');
 
--- Drop policies for the 'posts' table if they exist
-DROP POLICY IF EXISTS "Allow public read access for posts" ON public.posts;
-DROP POLICY IF EXISTS "Allow insert for authenticated users" ON public.posts;
-DROP POLICY IF EXISTS "Allow update for authenticated users" ON public.posts;
-DROP POLICY IF EXISTS "Allow delete for authenticated users" ON public.posts;
+-- Create the storage bucket for blog images
+SELECT extensions.storage_create_bucket('blog_images', '{"public":true}');
 
--- Drop the 'posts' table if it exists
-DROP TABLE IF EXISTS public.posts;
-
--- Drop policies for the 'blog_images' storage bucket if they exist
-DROP POLICY IF EXISTS "Allow public read access for blog_images bucket" ON storage.objects;
-DROP POLICY IF EXISTS "Allow insert for authenticated users for blog_images bucket" ON storage.objects;
-DROP POLICY IF EXISTS "Allow update for authenticated users for blog_images bucket" ON storage.objects;
-DROP POLICY IF EXISTS "Allow delete for authenticated users for blog_images bucket" ON storage.objects;
-
--- Empty and delete the storage bucket if it exists
--- Note: You might need to manually empty the bucket from the Supabase UI if this fails.
-DELETE FROM storage.objects WHERE bucket_id = 'blog_images';
-DELETE FROM storage.buckets WHERE id = 'blog_images';
-
--- =================================================================
---  SETUP: Create tables, storage, and policies
--- =================================================================
-
--- 1. Create the 'posts' table
--- This table will store all the blog post content.
+-- Create the posts table
 CREATE TABLE public.posts (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  title text NOT NULL,
-  description text,
-  content text,
-  "imageUrl" text,
-  category text,
-  "seoTitle" text,
-  "seoDescription" text,
-  "seoKeywords" text,
-  CONSTRAINT posts_pkey PRIMARY KEY (id)
+    id UUID DEFAULT gen_random_uuid() NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    title TEXT,
+    description TEXT,
+    content TEXT,
+    "imageUrl" TEXT,
+    category TEXT,
+    "seoTitle" TEXT,
+    "seoDescription" TEXT,
+    "seoKeywords" TEXT,
+    CONSTRAINT posts_pkey PRIMARY KEY (id)
 );
+
+-- Add comments to the table and columns
+COMMENT ON TABLE public.posts IS 'Stores blog post data.';
+COMMENT ON COLUMN public.posts.id IS 'Unique identifier for each post';
+COMMENT ON COLUMN public.posts.created_at IS 'Timestamp of when the post was created';
+COMMENT ON COLUMN public.posts.title IS 'The title of the blog post.';
+COMMENT ON COLUMN public.posts.description IS 'A short summary of the post.';
+COMMENT ON COLUMN public.posts.content IS 'The full content of the blog post in Markdown format.';
+COMMENT ON COLUMN public.posts."imageUrl" IS 'URL of the header image for the post.';
+COMMENT ON COLUMN public.posts.category IS 'Category of the blog post (e.g., "Creatives", "Business").';
+COMMENT ON COLUMN public.posts."seoTitle" IS 'SEO-optimized title.';
+COMMENT ON COLUMN public.posts."seoDescription" IS 'SEO-optimized meta description.';
+COMMENT ON COLUMN public.posts."seoKeywords" IS 'Comma-separated list of SEO keywords.';
+
+-- Enable Row Level Security (RLS) for the posts table
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
-COMMENT ON TABLE public.posts IS 'Stores blog posts for the application.';
 
--- 2. Create Storage Bucket for Blog Images
--- This bucket will store all the images associated with blog posts.
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('blog_images', 'blog_images', true)
-ON CONFLICT (id) DO NOTHING;
-COMMENT ON BUCKET blog_images IS 'Stores images for blog posts.';
+-- Drop existing policies to avoid conflicts
+DROP POLICY IF EXISTS "Allow public read access" ON public.posts;
+DROP POLICY IF EXISTS "Allow authenticated users to insert" ON public.posts;
+DROP POLICY IF EXISTS "Allow owner to update" ON public.posts;
+DROP POLICY IF EXISTS "Allow owner to delete" ON public.posts;
 
-
--- 3. Set up Row Level Security (RLS) for the 'posts' table
--- These policies control who can read, create, update, or delete posts.
-
--- Policy: Allow public (anonymous) read access to all posts.
-CREATE POLICY "Allow public read access for posts"
-ON public.posts
-FOR SELECT USING (true);
-
--- Policy: Allow authenticated users to insert new posts.
--- This is the key policy to fix the "violates row-level security" error.
-CREATE POLICY "Allow insert for authenticated users"
-ON public.posts
-FOR INSERT TO authenticated
-WITH CHECK (true);
-
--- Policy: Allow authenticated users to update their own posts (optional, good practice).
-CREATE POLICY "Allow update for authenticated users"
-ON public.posts
-FOR UPDATE TO authenticated
-USING (true)
-WITH CHECK (true);
-
--- Policy: Allow authenticated users to delete their own posts (optional, good practice).
-CREATE POLICY "Allow delete for authenticated users"
-ON public.posts
-FOR DELETE TO authenticated
-USING (true);
+-- Create RLS policies for the posts table
+CREATE POLICY "Allow public read access" ON public.posts FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated users to insert" ON public.posts FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Allow owner to update" ON public.posts FOR UPDATE USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow owner to delete" ON public.posts FOR DELETE USING (auth.role() = 'authenticated');
 
 
--- 4. Set up RLS policies for the 'blog_images' storage bucket
--- These policies control who can manage images in the storage bucket.
+-- RLS policies for storage bucket
+DROP POLICY IF EXISTS "Allow public read access to blog images" ON storage.objects;
+DROP POLICY IF EXISTS "Allow authenticated users to upload blog images" ON storage.objects;
 
--- Policy: Allow public read access to all images in the bucket.
-CREATE POLICY "Allow public read access for blog_images bucket"
-ON storage.objects
-FOR SELECT
-USING (bucket_id = 'blog_images');
-
--- Policy: Allow authenticated users to upload new images.
-CREATE POLICY "Allow insert for authenticated users for blog_images bucket"
-ON storage.objects
-FOR INSERT TO authenticated
-WITH CHECK (bucket_id = 'blog_images');
-
--- Policy: Allow authenticated users to update their own images.
-CREATE POLICY "Allow update for authenticated users for blog_images bucket"
-ON storage.objects
-FOR UPDATE TO authenticated
-USING (bucket_id = 'blog_images');
-
--- Policy: Allow authenticated users to delete their own images.
-CREATE POLICY "Allow delete for authenticated users for blog_images bucket"
-ON storage.objects
-FOR DELETE TO authenticated
-USING (bucket_id = 'blog_images');
+CREATE POLICY "Allow public read access to blog images" ON storage.objects FOR SELECT TO public USING (bucket_id = 'blog_images');
+CREATE POLICY "Allow authenticated users to upload blog images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'blog_images');
