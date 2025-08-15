@@ -4,8 +4,32 @@
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Bot, Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { Input } from "./ui/input";
+
+const Logo = () => (
+  <div className="flex items-center gap-2 font-bold font-headline text-lg">
+      <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-6 w-6"
+    >
+      <path d="M12 8V4H8v4" />
+      <rect width="12" height="10" x="6" y="10" rx="2" />
+      <path d="M6 14h12" />
+      <path d="M16 8v4h4V8" />
+    </svg>
+    Artechway
+  </div>
+);
+
 
 export function AppHeader() {
   const navItems = [
@@ -20,8 +44,7 @@ export function AppHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 font-bold font-headline text-lg">
-          <Bot className="h-6 w-6" />
-          Artechway
+          <Logo />
         </Link>
         <nav className="hidden items-center gap-6 md:flex">
             {navItems.map((item) => (
@@ -48,8 +71,7 @@ export function AppHeader() {
             <SheetTitle className="sr-only">Menu</SheetTitle>
             <div className="p-6 pt-12">
                 <Link href="/" className="mb-8 flex items-center gap-2 font-bold font-headline text-lg">
-                    <Bot className="h-6 w-6" />
-                    Artechway
+                    <Logo />
                 </Link>
                 <nav className="flex flex-col gap-4">
                 {navItems.map((item) => (
