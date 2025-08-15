@@ -66,17 +66,6 @@ export function LeftSidebar() {
             </SidebarMenu>
 
         </SidebarContent>
-        <SidebarFooter>
-            <div className="flex items-center gap-4 p-2">
-                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    <User />
-                </div>
-                <div className="group-data-[collapsible=icon]:hidden">
-                    <p className="font-bold">Your Name</p>
-                    <p className="text-sm text-muted-foreground">@yourhandle</p>
-                </div>
-            </div>
-        </SidebarFooter>
     </Sidebar>
   );
 }
