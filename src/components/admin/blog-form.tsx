@@ -179,12 +179,17 @@ export function BlogForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     let publicUrl = 'https://placehold.co/600x400.png';
+    const imageToUpload = generatedImageUrl || sourceImage;
 
-    if (generatedImageUrl) {
+    if (imageToUpload) {
       try {
-        const response = await fetch(generatedImageUrl);
+        const response = await fetch(imageToUpload);
         const blob = await response.blob();
-        const fileName = `${uuidv4()}.${blob.type.split('/')[1]}`;
+        const fileExtension = blob.type.split('/')[1];
+        // Ensure file extension is valid, default to 'png'
+        const validExtension = ['png', 'jpg', 'jpeg', 'gif'].includes(fileExtension) ? fileExtension : 'png';
+        const fileName = `${uuidv4()}.${validExtension}`;
+
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('blog_images')
           .upload(fileName, blob, {
@@ -366,6 +371,9 @@ export function BlogForm() {
                         <FormControl>
                             <Input type="file" accept="image/*" onChange={handleImageChange} />
                         </FormControl>
+                         <FormDescription>
+                            This will be the base for the generated image.
+                        </FormDescription>
                     </FormItem>
                     
                      <FormField
@@ -403,6 +411,11 @@ export function BlogForm() {
                                 </div>
                             )}
                         </div>
+                         {!sourceImage && !generatedImageUrl && (
+                            <div className="text-xs text-muted-foreground text-center col-span-2 pt-4">
+                                Upload a source image to see a preview.
+                            </div>
+                         )}
                     </div>
 
                 </CardContent>
@@ -466,5 +479,3 @@ export function BlogForm() {
     </Form>
   );
 }
-
-    
