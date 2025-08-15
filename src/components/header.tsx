@@ -2,9 +2,8 @@
 "use client";
 
 import Link from "next/link";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "./ui/input";
 import Image from 'next/image'
 import { SidebarTrigger } from "./ui/sidebar";
@@ -18,20 +17,12 @@ const Logo = () => (
 
 
 export function AppHeader() {
-  const navItems = [
-    { href: "/", text: "Home" },
-    { href: "#articles", text: "AI Creatives" },
-    { href: "#articles", text: "AI Business" },
-    { href: "#", text: "About" },
-    { href: "#", text: "Contact" },
-  ];
-
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="md:hidden"/>
-          <Link href="/" className="flex items-center gap-2 font-bold font-headline text-lg">
+          <Link href="/" className="flex items-center gap-2 font-bold font-headline text-lg md:hidden">
             <Logo />
           </Link>
         </div>
