@@ -1,71 +1,51 @@
 -- Create the posts table
-CREATE TABLE if not exists posts (
-    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+CREATE TABLE IF NOT EXISTS public.posts (
+    id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
     title text,
     description text,
-    "content" text,
     "imageUrl" text,
+    content text,
     category text,
     "seoTitle" text,
     "seoDescription" text,
     "seoKeywords" text
 );
 
--- Create a bucket for blog images
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES ('blog_images', 'blog_images', true, 10485760, ARRAY['image/jpeg', 'image/png', 'image/gif'])
-ON CONFLICT (id) DO NOTHING;
+-- Enable Row Level Security for the posts table
+ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies before creating them to ensure idempotency
+DROP POLICY IF EXISTS "Allow public read access" ON public.posts;
+DROP POLICY IF EXISTS "Allow authenticated users to insert" ON public.posts;
 
--- Set up Row Level Security (RLS)
--- Enable RLS for the posts table
-alter table public.posts enable row level security;
+-- Create policy to allow public read access
+CREATE POLICY "Allow public read access" ON public.posts
+    FOR SELECT
+    USING (true);
 
--- Allow public read access to everyone
-create policy "Allow public read access" on public.posts
-as permissive for select
-to public
-using ( true );
+-- Create policy to allow authenticated users to insert
+CREATE POLICY "Allow authenticated users to insert" ON public.posts
+    FOR INSERT
+    TO authenticated
+    WITH CHECK (auth.role() = 'authenticated');
+    
+-- Create a storage bucket for blog images
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('blog_images', 'blog_images', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
 
--- Allow insert access to authenticated users
-create policy "Allow insert for authenticated users" on public.posts
-as permissive for insert
-to authenticated
-with check ( true );
+-- Drop existing storage policies before creating them
+DROP POLICY IF EXISTS "Allow public read access to blog images" ON storage.objects;
+DROP POLICY IF EXISTS "Allow authenticated users to insert into blog images" ON storage.objects;
 
--- Allow update access to authenticated users
-create policy "Allow update for authenticated users" on public.posts
-as permissive for update
-to authenticated
-using ( true );
+-- Create policy for public read access to blog_images
+CREATE POLICY "Allow public read access to blog images" ON storage.objects
+    FOR SELECT
+    USING (bucket_id = 'blog_images');
 
--- Allow delete access to authenticated users
-create policy "Allow delete for authenticated users" on public.posts
-as permissive for delete
-to authenticated
-using ( true );
-
--- Set up policies for the storage bucket
--- Allow public read access to the blog_images bucket
-CREATE POLICY "Public read access for blog_images" ON storage.objects
-FOR SELECT
-USING (bucket_id = 'blog_images');
-
--- Allow insert access to authenticated users for the blog_images bucket
-CREATE POLICY "Allow insert for authenticated users on blog_images" ON storage.objects
-FOR INSERT
-TO authenticated
-WITH CHECK (bucket_id = 'blog_images');
-
--- Allow update access to authenticated users for the blog_images bucket
-CREATE POLICY "Allow update for authenticated users on blog_images" ON storage.objects
-FOR UPDATE
-TO authenticated
-USING (bucket_id = 'blog_images');
-
--- Allow delete access to authenticated users for the blog_images bucket
-CREATE POLICY "Allow delete for authenticated users on blog_images" ON storage.objects
-FOR DELETE
-TO authenticated
-USING (bucket_id = 'blog_images');
+-- Create policy for authenticated users to insert into blog_images
+CREATE POLICY "Allow authenticated users to insert into blog images" ON storage.objects
+    FOR INSERT
+    TO authenticated
+    WITH CHECK (bucket_id = 'blog_images' AND auth.role() = 'authenticated');
