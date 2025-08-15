@@ -1,10 +1,10 @@
 -- Create the posts table
-CREATE TABLE IF NOT EXISTS posts (
+CREATE TABLE if not exists posts (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    created_at timestamp WITH time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+    created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
     title text,
     description text,
-    content text,
+    "content" text,
     "imageUrl" text,
     category text,
     "seoTitle" text,
@@ -12,45 +12,60 @@ CREATE TABLE IF NOT EXISTS posts (
     "seoKeywords" text
 );
 
--- RLS Policies for posts table
-ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
-
--- Allow public read access to all posts
-CREATE POLICY "Allow public read access" ON posts
-FOR SELECT USING (true);
-
--- Allow admin users to insert new posts
--- This policy allows any authenticated user to insert.
-CREATE POLICY "Allow insert for authenticated users" ON posts
-FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
--- Allow admin users to update posts
-CREATE POLICY "Allow update for authenticated users" ON posts
-FOR UPDATE USING (auth.role() = 'authenticated') WITH CHECK (auth.role() = 'authenticated');
-
--- Allow admin users to delete posts
-CREATE POLICY "Allow delete for authenticated users" ON posts
-FOR DELETE USING (auth.role() = 'authenticated');
-
-
--- Create a bucket for blog images with public read access
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('blog_images', 'blog_images', true)
+-- Create a bucket for blog images
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('blog_images', 'blog_images', true, 10485760, ARRAY['image/jpeg', 'image/png', 'image/gif'])
 ON CONFLICT (id) DO NOTHING;
 
--- RLS Policies for blog_images bucket
--- Allow public read access to all images in the bucket
-CREATE POLICY "Allow public read access" ON storage.objects
-FOR SELECT USING (bucket_id = 'blog_images');
 
--- Allow authenticated users to upload images
-CREATE POLICY "Allow insert for authenticated users" ON storage.objects
-FOR INSERT WITH CHECK (bucket_id = 'blog_images' AND auth.role() = 'authenticated');
+-- Set up Row Level Security (RLS)
+-- Enable RLS for the posts table
+alter table public.posts enable row level security;
 
--- Allow authenticated users to update their own images
-CREATE POLICY "Allow update for authenticated users" ON storage.objects
-FOR UPDATE USING (bucket_id = 'blog_images' AND auth.role() = 'authenticated');
+-- Allow public read access to everyone
+create policy "Allow public read access" on public.posts
+as permissive for select
+to public
+using ( true );
 
--- Allow authenticated users to delete their own images
-CREATE POLICY "Allow delete for authenticated users" ON storage.objects
-FOR DELETE USING (bucket_id = 'blog_images' AND auth.role() = 'authenticated');
+-- Allow insert access to authenticated users
+create policy "Allow insert for authenticated users" on public.posts
+as permissive for insert
+to authenticated
+with check ( true );
+
+-- Allow update access to authenticated users
+create policy "Allow update for authenticated users" on public.posts
+as permissive for update
+to authenticated
+using ( true );
+
+-- Allow delete access to authenticated users
+create policy "Allow delete for authenticated users" on public.posts
+as permissive for delete
+to authenticated
+using ( true );
+
+-- Set up policies for the storage bucket
+-- Allow public read access to the blog_images bucket
+CREATE POLICY "Public read access for blog_images" ON storage.objects
+FOR SELECT
+USING (bucket_id = 'blog_images');
+
+-- Allow insert access to authenticated users for the blog_images bucket
+CREATE POLICY "Allow insert for authenticated users on blog_images" ON storage.objects
+FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'blog_images');
+
+-- Allow update access to authenticated users for the blog_images bucket
+CREATE POLICY "Allow update for authenticated users on blog_images" ON storage.objects
+FOR UPDATE
+TO authenticated
+USING (bucket_id = 'blog_images');
+
+-- Allow delete access to authenticated users for the blog_images bucket
+CREATE POLICY "Allow delete for authenticated users on blog_images" ON storage.objects
+FOR DELETE
+TO authenticated
+USING (bucket_id = 'blog_images');

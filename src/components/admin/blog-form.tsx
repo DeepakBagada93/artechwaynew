@@ -178,7 +178,7 @@ export function BlogForm() {
     setIsSubmitting(true);
     const finalValues = {
         ...values,
-        imageUrl: generatedImageUrl,
+        imageUrl: generatedImageUrl || 'https://placehold.co/600x400.png',
     };
 
     const { error } = await supabase.from('posts').insert([
@@ -198,8 +198,8 @@ export function BlogForm() {
         console.error('Error inserting post:', error);
         toast({
             variant: "destructive",
-            title: "Error",
-            description: "Failed to create blog post. Please try again.",
+            title: "Error inserting post",
+            description: error.message || "Please check the console for more details.",
         });
     } else {
         toast({
@@ -420,7 +420,7 @@ export function BlogForm() {
              </Card>
           </div>
         </div>
-        <Button type="submit" disabled={!generatedImageUrl || isSubmitting}>
+        <Button type="submit" disabled={isSubmitting}>
              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Create Post
         </Button>
