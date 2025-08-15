@@ -1,67 +1,49 @@
 --
--- RLS and Table schema for 'posts'
+-- comprehensive supabase schema
 --
--- 1. Clean up old table and policies
-DROP TABLE IF EXISTS public.posts;
-
--- 2. Create the posts table
-CREATE TABLE public.posts (
-    id uuid NOT NULL DEFAULT gen_random_uuid(),
-    created_at timestamp with time zone NOT NULL DEFAULT now(),
-    title text NOT NULL,
-    description text,
-    content text,
-    "imageUrl" text,
-    category text,
-    "seoTitle" text,
-    "seoDescription" text,
-    "seoKeywords" text,
-    CONSTRAINT posts_pkey PRIMARY KEY (id)
+-- drop existing policies on the posts table if they exist
+drop policy if exists "allow public read access" on public.posts;
+drop policy if exists "allow authenticated users to manage posts" on public.posts;
+-- drop the posts table if it exists
+drop table if exists public.posts;
+-- create the posts table
+create table public.posts (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  title text not null,
+  description text,
+  content text,
+  "imageUrl" text,
+  category text,
+  "seoTitle" text,
+  "seoDescription" text,
+  "seoKeywords" text
 );
-COMMENT ON TABLE public.posts IS 'Stores blog posts for the application.';
-
--- 3. Enable Row Level Security (RLS) on the posts table
-ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
-
--- 4. Create policies for the posts table
--- Policy for public read access
-CREATE POLICY "Allow public read access" 
-ON public.posts 
-FOR SELECT 
-USING (true);
-
--- Policy for allowing authenticated users to insert, update, and delete
-CREATE POLICY "Allow authenticated users full access" 
-ON public.posts 
-FOR ALL 
-USING (auth.role() = 'authenticated') 
-WITH CHECK (auth.role() = 'authenticated');
-
-
+comment on table public.posts is 'stores blog posts for the application.';
+-- enable row level security (rls) on the posts table
+alter table public.posts enable row level security;
+-- create policies for the posts table
+create policy "allow public read access" on public.posts for
+select
+  using (true);
+create policy "allow authenticated users to manage posts" on public.posts for all using (auth.role() = 'authenticated');
 --
--- Storage Bucket and Policies for 'blog_images'
+-- storage setup
 --
--- 1. Create the storage bucket if it doesn't exist
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES ('blog_images', 'blog_images', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp'])
-ON CONFLICT (id) DO NOTHING;
-
-COMMENT ON BUCKET blog_images IS 'Stores images for blog posts.';
-
--- 2. Clean up old policies for the bucket
-DROP POLICY IF EXISTS "Allow public read access to blog images" ON storage.objects;
-DROP POLICY IF EXISTS "Allow authenticated users to upload to blog images" ON storage.objects;
-
--- 3. Create policies for the blog_images bucket
--- Policy for public read access
-CREATE POLICY "Allow public read access to blog images"
-ON storage.objects
-FOR SELECT
-USING (bucket_id = 'blog_images');
-
--- Policy for authenticated users to upload, update, and delete their own images
-CREATE POLICY "Allow authenticated users to upload to blog images"
-ON storage.objects
-FOR ALL
-USING (auth.role() = 'authenticated' AND bucket_id = 'blog_images')
-WITH CHECK (auth.role() = 'authenticated' AND bucket_id = 'blog_images');
+-- drop existing storage bucket policies if they exist
+drop policy if exists "allow public read access for blog images" on storage.objects;
+drop policy if exists "allow authenticated users to upload blog images" on storage.objects;
+-- drop the storage bucket if it exists (requires storage admin privileges)
+-- note: this might need to be done manually in the supabase dashboard if the user running the script doesn't have permissions.
+-- select storage.delete_bucket('blog_images');
+-- create the storage bucket
+-- insert into storage.buckets (id, name, public) values ('blog_images', 'blog_images', true);
+-- create policies for the blog_images storage bucket
+create policy "allow public read access for blog images" on storage.objects for
+select
+  using (bucket_id = 'blog_images');
+create policy "allow authenticated users to upload blog images" on storage.objects for insert with check (
+  bucket_id = 'blog_images'
+  and auth.role() = 'authenticated'
+);
+comment on policy "allow authenticated users to upload blog images" on storage.objects is 'allows authenticated users to upload images to the blog_images bucket.';
