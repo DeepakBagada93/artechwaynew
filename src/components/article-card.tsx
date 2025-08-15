@@ -45,7 +45,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
         <div className="mt-4">
             <Badge variant={article.category === 'Creatives' ? 'default' : 'secondary'} className="mb-2">{article.category}</Badge>
             <CardTitle className="font-headline text-2xl">
-                <Link href="#">{article.title}</Link>
+                <Link href={`/posts/${article.id}`}>{article.title}</Link>
             </CardTitle>
         </div>
       </CardHeader>
@@ -67,7 +67,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
             </div>
         </div>
         <Button asChild variant="ghost">
-          <Link href="#">
+          <Link href={`/posts/${article.id}`}>
             Read more <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>
