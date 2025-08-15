@@ -1,5 +1,4 @@
 import { ArticleCard } from "@/components/article-card";
-import { LeftSidebar } from "@/components/left-sidebar";
 import { RightSidebar } from "@/components/right-sidebar";
 import { AppHeader } from "@/components/header";
 import { createBrowserClient } from "@supabase/ssr";
@@ -32,28 +31,27 @@ export default async function Home() {
 
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <LeftSidebar />
-      <div className="flex-1">
-        <AppHeader />
-        <main className="container mx-auto max-w-5xl px-4 py-8">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <div className="space-y-8 lg:col-span-2">
-               {formattedArticles.length > 0 ? (
-                formattedArticles.map((article) => (
-                  <ArticleCard key={article.id} article={article} />
-                ))
+    <div className="flex min-h-screen flex-col bg-background">
+      <AppHeader />
+      <div className="container mx-auto max-w-7xl flex-1 px-4 py-8">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+          <main className="lg:col-span-8">
+            <div className="space-y-8">
+              {formattedArticles.length > 0 ? (
+              formattedArticles.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))
               ) : (
-                <div className="text-center text-muted-foreground">
-                  <p>No articles found. Check back later!</p>
-                </div>
+              <div className="text-center text-muted-foreground">
+                <p>No articles found. Check back later!</p>
+              </div>
               )}
             </div>
-            <div className="lg:col-span-1">
-              <RightSidebar />
-            </div>
-          </div>
-        </main>
+          </main>
+          <aside className="lg:col-span-4">
+            <RightSidebar />
+          </aside>
+        </div>
       </div>
     </div>
   );

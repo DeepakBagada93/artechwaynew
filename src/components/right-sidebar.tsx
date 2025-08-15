@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Tag } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { Footer } from "./footer";
 
 export function RightSidebar() {
   const tags = ["AI Writing", "SaaS", "Automation", "Graphic Design", "Productivity", "Marketing", "Web Dev"]
@@ -46,12 +47,12 @@ export function RightSidebar() {
           </CardContent>
       </Card>
 
-      <Footer />
+      <SidebarFooter />
     </aside>
   );
 }
 
-function Footer() {
+function SidebarFooter() {
     return (
         <div className="text-xs text-muted-foreground space-y-2">
             <div className="flex flex-wrap gap-x-4 gap-y-1">

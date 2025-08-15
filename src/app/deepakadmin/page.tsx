@@ -96,15 +96,15 @@ export default function AdminPage() {
   }
 
   if (loading) {
-    return <div className="container mx-auto flex h-screen items-center justify-center">Loading...</div>;
+    return <div className="flex h-screen items-center justify-center">Loading...</div>;
   }
 
   if (!session) {
     return (
-        <>
+        <div className="flex flex-col min-h-screen">
         <AppHeader />
-        <div className="container mx-auto flex h-screen max-w-lg items-center justify-center">
-            <Card>
+        <main className="flex-grow flex items-center justify-center">
+            <Card className="w-full max-w-md">
             <CardHeader>
                 <CardTitle>Admin Login</CardTitle>
                 <CardDescription>
@@ -139,16 +139,16 @@ export default function AdminPage() {
                 </form>
             </CardContent>
             </Card>
-        </div>
+        </main>
         <Footer />
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
     <AppHeader />
-    <div className="container mx-auto max-w-5xl px-4 py-8">
+    <main className="flex-grow container mx-auto max-w-5xl px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-headline font-bold">Admin Portal</h1>
         <Button variant="outline" onClick={handleLogout} disabled={loading}>
@@ -188,8 +188,8 @@ export default function AdminPage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </main>
     <Footer />
-    </>
+    </div>
   );
 }
