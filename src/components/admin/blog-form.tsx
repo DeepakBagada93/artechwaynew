@@ -181,7 +181,7 @@ export function BlogForm() {
         imageUrl: generatedImageUrl || 'https://placehold.co/600x400.png',
     };
 
-    const { error } = await supabase.from('posts').insert([
+    const { error } = await supabase.from('dpost').insert([
         { 
             title: finalValues.title,
             description: finalValues.description,

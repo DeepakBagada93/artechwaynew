@@ -3,6 +3,7 @@ import { RightSidebar } from "@/components/right-sidebar";
 import { AppHeader } from "@/components/header";
 import { createBrowserClient } from "@supabase/ssr";
 import type { Article } from "@/lib/data";
+import { Footer } from "@/components/footer";
 
 export default async function Home() {
     const supabase = createBrowserClient(
@@ -11,7 +12,7 @@ export default async function Home() {
     );
     
   const { data: articles, error } = await supabase
-    .from('posts')
+    .from('dpost')
     .select('*')
     .order('created_at', { ascending: false });
 
@@ -53,6 +54,7 @@ export default async function Home() {
           </aside>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
