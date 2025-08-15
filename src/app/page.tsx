@@ -12,7 +12,7 @@ export default async function Home() {
     );
     
   const { data: articles, error } = await supabase
-    .from('dpost')
+    .from('posts')
     .select('*')
     .order('created_at', { ascending: false });
 

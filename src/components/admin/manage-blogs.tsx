@@ -22,7 +22,7 @@ export function ManageBlogs() {
         const fetchPosts = async () => {
             setLoading(true);
             const { data, error } = await supabase
-                .from('dpost')
+                .from('posts')
                 .select('*')
                 .order('created_at', { ascending: false });
 
