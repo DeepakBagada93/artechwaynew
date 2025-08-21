@@ -7,6 +7,7 @@ import { Search } from "lucide-react";
 import { Input } from "./ui/input";
 import Image from 'next/image'
 import { SidebarTrigger } from "./ui/sidebar";
+import { MobileCta } from "./mobile-cta";
 
 const Logo = () => (
   <div className="flex items-center gap-2 font-bold font-headline text-lg">
@@ -31,8 +32,10 @@ export function AppHeader() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input placeholder="Search..." className="h-9 w-[150px] rounded-full pl-9 lg:w-[250px]" />
             </div>
+            <MobileCta />
         </div>
       </div>
     </header>
   );
 }
+
