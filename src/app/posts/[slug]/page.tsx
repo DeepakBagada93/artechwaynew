@@ -1,3 +1,4 @@
+
 import { createBrowserClient } from "@supabase/ssr";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -15,7 +16,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 export const revalidate = 3600; // Revalidate every hour
 
 type Props = {
-  params: { id: string };
+  params: { slug: string };
 };
 
 export default async function PostPage({ params }: Props) {
@@ -27,7 +28,7 @@ export default async function PostPage({ params }: Props) {
   const { data: post, error } = await supabase
     .from("posts")
     .select("*")
-    .eq("id", params.id)
+    .eq("slug", params.slug)
     .single();
 
   if (error || !post) {

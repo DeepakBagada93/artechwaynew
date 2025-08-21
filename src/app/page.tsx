@@ -1,3 +1,4 @@
+
 import { ArticleCard } from "@/components/article-card";
 import { RightSidebar } from "@/components/right-sidebar";
 import { AppHeader } from "@/components/header";
@@ -26,6 +27,7 @@ export default async function Home() {
   const formattedArticles: Article[] = articles?.map(post => ({
     id: post.id,
     title: post.title,
+    slug: post.slug,
     description: post.description,
     category: post.category,
     imageUrl: post.imageUrl,

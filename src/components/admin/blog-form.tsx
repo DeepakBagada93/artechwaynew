@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useState } from "react";
 import Image from "next/image";
 import { v4 as uuidv4 } from 'uuid';
+import slugify from "slugify";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -219,9 +220,12 @@ export function BlogForm() {
       }
     }
     
+    const slug = slugify(values.title, { lower: true, strict: true });
+
     const finalValues = {
       ...values,
       imageUrl: publicUrl,
+      slug: slug,
     };
 
     const { error } = await supabase.from('posts').insert([
@@ -234,6 +238,7 @@ export function BlogForm() {
             seoTitle: finalValues.seoTitle,
             seoDescription: finalValues.seoDescription,
             seoKeywords: finalValues.seoKeywords,
+            slug: finalValues.slug,
          }
     ]);
 

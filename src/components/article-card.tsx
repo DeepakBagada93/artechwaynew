@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import {
   Card,
@@ -19,6 +20,8 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article }: ArticleCardProps) {
+  const postUrl = `/posts/${article.slug}`;
+
   return (
     <Card className="overflow-hidden transition-all duration-200 ease-in-out hover:shadow-lg hover:-translate-y-1">
       {article.imageUrl && (
@@ -45,7 +48,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
         <div className="mt-4">
             <Badge variant={article.category === 'Creatives' ? 'default' : 'secondary'} className="mb-2">{article.category}</Badge>
             <CardTitle className="font-headline text-2xl">
-                <Link href={`/posts/${article.id}`}>{article.title}</Link>
+                <Link href={postUrl}>{article.title}</Link>
             </CardTitle>
         </div>
       </CardHeader>
@@ -67,7 +70,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
             </div>
         </div>
         <Button asChild variant="ghost">
-          <Link href={`/posts/${article.id}`}>
+          <Link href={postUrl}>
             Read more <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>

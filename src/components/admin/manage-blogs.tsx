@@ -50,6 +50,7 @@ export function ManageBlogs() {
       const formattedArticles: Article[] = data?.map(post => ({
         id: post.id,
         title: post.title,
+        slug: post.slug,
         description: post.description,
         category: post.category,
         imageUrl: post.imageUrl,
@@ -167,5 +168,3 @@ export function ManageBlogs() {
     </Table>
   );
 }
-
-    
