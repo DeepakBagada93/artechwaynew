@@ -31,7 +31,6 @@ export function AppHeader() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input placeholder="Search..." className="h-9 w-[150px] rounded-full pl-9 lg:w-[250px]" />
             </div>
-            <Button size="sm">Subscribe</Button>
         </div>
       </div>
     </header>
