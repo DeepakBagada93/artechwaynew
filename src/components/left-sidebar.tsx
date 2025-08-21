@@ -34,10 +34,6 @@ export function LeftSidebar() {
             </Link>
         </SidebarHeader>
         <SidebarContent>
-            <div className="relative mb-4 px-2 group-data-[collapsible=icon]:hidden">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search..." className="h-9 w-full rounded-full pl-9" />
-            </div>
             <SidebarMenu>
                 {navItems.map((item) => (
                     <SidebarMenuItem key={item.text}>
