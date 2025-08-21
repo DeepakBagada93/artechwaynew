@@ -22,7 +22,7 @@ export function LeftSidebar() {
 
   const secondaryNavItems = [
      { href: "#", icon: Info, text: "About" },
-     { href: "#", icon: Mail, text: "Contact" },
+     { href: "/contact", icon: Mail, text: "Contact" },
      { href: "#", icon: Settings, text: "Settings" },
   ]
 
