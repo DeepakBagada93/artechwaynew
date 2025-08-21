@@ -11,9 +11,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Article } from "@/lib/data";
-import { MessageCircle, Heart, Share2, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 interface ArticleCardProps {
   article: Article;
@@ -42,7 +42,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
           </Avatar>
           <div>
             <span className="font-bold">Artechway</span>
-            <p className="text-sm text-muted-foreground">@artechway · 1h ago</p>
+            <p className="text-sm text-muted-foreground">@artechway</p>
           </div>
         </div>
         <div className="mt-4">
@@ -55,20 +55,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
       <CardContent>
         <CardDescription className="text-base">{article.description}</CardDescription>
       </CardContent>
-      <CardFooter className="flex justify-between items-center">
-        <div className="flex items-center gap-4 text-muted-foreground">
-            <div className="flex items-center gap-1">
-                <MessageCircle className="h-5 w-5" />
-                <span>12</span>
-            </div>
-             <div className="flex items-center gap-1">
-                <Heart className="h-5 w-5" />
-                <span>42</span>
-            </div>
-             <div className="flex items-center gap-1">
-                <Share2 className="h-5 w-5" />
-            </div>
-        </div>
+      <CardFooter className="flex justify-end items-center">
         <Button asChild variant="ghost">
           <Link href={postUrl}>
             Read more <ArrowRight className="ml-2 h-4 w-4" />
