@@ -1,6 +1,7 @@
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Bot, Home, Hash, User, Settings, Info, Mail, Search } from "lucide-react";
+import { Bot, Home, Hash, User, Info, Mail, Search } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from "./ui/sidebar";
 import Image from "next/image";
 import { Input } from "./ui/input";
@@ -21,9 +22,8 @@ export function LeftSidebar() {
   ];
 
   const secondaryNavItems = [
-     { href: "#", icon: Info, text: "About" },
+     { href: "/about", icon: Info, text: "About" },
      { href: "/contact", icon: Mail, text: "Contact" },
-     { href: "#", icon: Settings, text: "Settings" },
   ]
 
   return (
