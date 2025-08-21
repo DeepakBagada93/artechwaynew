@@ -16,10 +16,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { LogOut } from "lucide-react";
+import { Home, LogOut } from "lucide-react";
 import { AppHeader } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -113,8 +114,16 @@ export default function AdminPage() {
       <div className="flex flex-col min-h-screen">
         <AppHeader />
         <main className="flex-grow container mx-auto max-w-5xl px-4 py-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-headline font-bold">Admin Portal</h1>
+           <div className="flex justify-between items-center mb-8">
+            <div className="flex items-center gap-4">
+              <h1 className="text-4xl font-headline font-bold">Admin Portal</h1>
+              <Button asChild variant="outline">
+                <Link href="/">
+                  <Home className="mr-2 h-4 w-4" />
+                  Home
+                </Link>
+              </Button>
+            </div>
             <Button variant="outline" onClick={handleLogout} disabled={loading}>
               <LogOut className="mr-2 h-4 w-4" />
               {loading ? "Logging out..." : "Logout"}
