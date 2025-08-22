@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Input } from "./ui/input";
 
 const Logo = () => (
-  <div className="flex items-center gap-2 font-bold font-headline text-lg">
+  <div className="flex items-center gap-2 font-bold font-mono text-lg uppercase">
       <span className="group-data-[collapsible=icon]:hidden">Artechway</span>
   </div>
 );

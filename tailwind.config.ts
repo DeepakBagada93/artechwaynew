@@ -24,6 +24,7 @@ export default {
         body: ['"Roboto Flex"', 'sans-serif'],
         headline: ['"Roboto Flex"', 'sans-serif'],
         code: ['monospace'],
+        mono: ['"Space Mono"', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

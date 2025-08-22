@@ -10,7 +10,7 @@ import { SidebarTrigger } from "./ui/sidebar";
 import { MobileCta } from "./mobile-cta";
 
 const Logo = () => (
-  <div className="flex items-center gap-2 font-bold font-headline text-lg">
+  <div className="flex items-center gap-2 font-bold font-mono text-lg uppercase">
       <span className="hidden sm:inline-block">Artechway</span>
   </div>
 );
