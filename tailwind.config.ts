@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -16,9 +17,12 @@ export default {
       },
     },
     extend: {
+      fontWeight: {
+        'extra-thin': '200',
+      },
       fontFamily: {
-        body: ['"Comfortaa"', 'sans-serif'],
-        headline: ['"Comfortaa"', 'sans-serif'],
+        body: ['"Roboto Flex"', 'sans-serif'],
+        headline: ['"Roboto Flex"', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
