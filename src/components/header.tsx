@@ -11,7 +11,6 @@ import { MobileCta } from "./mobile-cta";
 
 const Logo = () => (
   <div className="flex items-center gap-2 font-bold font-headline text-lg">
-      <Image src="/artechway.png" alt="Artechway Logo" width={40} height={40} data-ai-hint="logo" />
       <span className="hidden sm:inline-block">Artechway</span>
   </div>
 );
