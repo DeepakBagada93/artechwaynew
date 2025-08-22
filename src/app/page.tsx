@@ -2,16 +2,25 @@
 import { ArticleCard } from "@/components/article-card";
 import { RightSidebar } from "@/components/right-sidebar";
 import { AppHeader } from "@/components/header";
-import { createBrowserClient } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import type { Article } from "@/lib/data";
 import { Footer } from "@/components/footer";
 import { LeftSidebar } from "@/components/left-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { cookies } from "next/headers";
 
 export default async function Home() {
-    const supabase = createBrowserClient(
+    const cookieStore = cookies();
+    const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+        },
+      }
     );
     
   const { data: articles, error } = await supabase
