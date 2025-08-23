@@ -25,7 +25,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
   return (
     <Card className="overflow-hidden transition-all duration-200 ease-in-out hover:shadow-lg hover:-translate-y-1">
       {article.imageUrl && (
-        <div className="relative h-64 w-full">
+        <div className="relative w-full aspect-video">
           <Image
             src={article.imageUrl}
             alt={article.title}
