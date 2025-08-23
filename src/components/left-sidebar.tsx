@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Bot, Home, Hash, User, Info, Mail, Search, Newspaper } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "./ui/sidebar";
-import Image from "next/image";
 import { Input } from "./ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 
@@ -43,8 +42,7 @@ export function LeftSidebar() {
                         </Link>
                     </SidebarMenuItem>
                 ))}
-                <Collapsible asChild>
-                  <>
+                <Collapsible>
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton
@@ -56,7 +54,7 @@ export function LeftSidebar() {
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                     </SidebarMenuItem>
-                    <CollapsibleContent asChild>
+                    <CollapsibleContent>
                       <SidebarMenuSub>
                         <SidebarMenuSubItem>
                           <Link href="/?category=Creatives">
@@ -70,7 +68,6 @@ export function LeftSidebar() {
                         </SidebarMenuSubItem>
                       </SidebarMenuSub>
                     </CollapsibleContent>
-                  </>
                 </Collapsible>
             </SidebarMenu>
 
