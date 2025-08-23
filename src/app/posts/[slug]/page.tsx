@@ -1,5 +1,5 @@
 
-import { createBrowserClient } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
@@ -12,6 +12,7 @@ import { RightSidebar } from "@/components/right-sidebar";
 import { Card } from "@/components/ui/card";
 import { LeftSidebar } from "@/components/left-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { cookies } from "next/headers";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -20,10 +21,18 @@ type Props = {
 };
 
 export default async function PostPage({ params }: Props) {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+    const cookieStore = cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+        },
+      }
+    );
 
   const { data: post, error } = await supabase
     .from("posts")
@@ -69,7 +78,7 @@ export default async function PostPage({ params }: Props) {
                       </div>
 
                       {post.imageUrl && (
-                        <div className="relative my-8 h-96 w-full">
+                        <div className="relative my-8 w-full aspect-video">
                           <Image
                             src={post.imageUrl}
                             alt={post.title}
