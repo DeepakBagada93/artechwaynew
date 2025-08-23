@@ -9,7 +9,14 @@ import { LeftSidebar } from "@/components/left-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 
-export default async function Home() {
+type HomeProps = {
+  searchParams: {
+    category?: string;
+  };
+};
+
+
+export default async function Home({ searchParams }: HomeProps) {
     const cookieStore = cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,10 +30,16 @@ export default async function Home() {
       }
     );
     
-  const { data: articles, error } = await supabase
+  let query = supabase
     .from('posts')
     .select('*')
     .order('created_at', { ascending: false });
+
+  if (searchParams.category) {
+    query = query.eq('category', searchParams.category);
+  }
+    
+  const { data: articles, error } = await query;
 
   if (error) {
     console.error('Error fetching posts:', error);
